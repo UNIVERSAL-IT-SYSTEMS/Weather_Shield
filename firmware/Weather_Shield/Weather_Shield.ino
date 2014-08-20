@@ -16,6 +16,10 @@
  
  This example code assumes the GPS module is not used.
  
+ When this example is used on the Galileo running Windows Developer Program for IoT, it will be necessary to
+ implement the pullup resistors connected to the wind speed and rain gauge externally. INPUT_PULLUP is not
+ yet supported on the Windows Developer Program for IoT.
+
  */
 
 #include <Wire.h> //I2C needed for sensors
@@ -24,6 +28,15 @@
 
 MPL3115A2 myPressure; //Create an instance of the pressure sensor
 HTU21D myHumidity; //Create an instance of the humidity sensor
+
+//Forward declarations
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+float get_battery_level();
+float get_light_level();
+int get_wind_direction();
+float get_wind_speed();
+void printWeather();
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 //Hardware pin definitions
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -83,8 +96,8 @@ volatile float dailyrainin = 0; // [rain inches so far today in local time]
 float pressure = 0;
 //float dewptf; // [dewpoint F] - It's hard to calculate dewpoint locally, do this in the agent
 
-float batt_lvl = 11.8; //[analog value from 0 to 1023]
-float light_lvl = 455; //[analog value from 0 to 1023]
+float batt_lvl = 11.8f; //[analog value from 0 to 1023]
+float light_lvl = 455.0f; //[analog value from 0 to 1023]
 
 // volatiles are subject to modification by IRQs
 volatile unsigned long raintime, rainlast, raininterval, rain;
@@ -102,8 +115,8 @@ void rainIRQ()
 
     if (raininterval > 10) // ignore switch-bounce glitches less than 10mS after initial edge
   {
-    dailyrainin += 0.011; //Each dump is 0.011" of water
-    rainHour[minutes] += 0.011; //Increase this minute's amount of rain
+    dailyrainin += 0.011f; //Each dump is 0.011" of water
+    rainHour[minutes] += 0.011f; //Increase this minute's amount of rain
 
     rainlast = raintime; // set up for next event
   }
@@ -122,17 +135,26 @@ void wspeedIRQ()
 
 void setup()
 {
+#ifndef _WINDOWS_  
   Serial.begin(9600);
   Serial.println("Weather Shield Example");
+#else
+  Log(L"Weather Shield Example\n");
+#endif
 
   pinMode(STAT1, OUTPUT); //Status LED Blue
   pinMode(STAT2, OUTPUT); //Status LED Green
-  
+
+#ifndef _WINDOWS_  
   pinMode(WSPEED, INPUT_PULLUP); // input from wind meters windspeed sensor
   pinMode(RAIN, INPUT_PULLUP); // input from wind meters rain gauge sensor
   
   pinMode(REFERENCE_3V3, INPUT);
   pinMode(LIGHT, INPUT);
+#else
+  pinMode(WSPEED, INPUT); // input from wind meters windspeed sensor - pull-up resistors must be implemented externally
+  pinMode(RAIN, INPUT); // input from wind meters rain gauge sensor - pull-up resistors must be implemented externally
+#endif
 
   //Configure the pressure sensor
   myPressure.begin(); // Get sensor online
@@ -153,8 +175,11 @@ void setup()
   // turn on interrupts
   interrupts();
 
+#ifndef _WINDOWS_
   Serial.println("Weather Shield online!");
-
+#else
+  Log(L"Weather Shield online!\n");
+#endif
 }
 
 void loop()
@@ -238,7 +263,7 @@ void calcWeather()
   for(int i = 0 ; i < 120 ; i++)
     temp += winddiravg[i];
   temp /= 120;
-  winddir_avg2m = temp;
+  winddir_avg2m = (int)temp;
 
   //Calc windgustmph_10m
   //Calc windgustdir_10m
@@ -288,11 +313,11 @@ void calcWeather()
 //This allows us to ignore what VCC might be (an Arduino plugged into USB has VCC of 4.5 to 5.2V)
 float get_light_level()
 {
-  float operatingVoltage = analogRead(REFERENCE_3V3);
+  float operatingVoltage = (float)analogRead(REFERENCE_3V3);
 
-  float lightSensor = analogRead(LIGHT);
+  float lightSensor = (float)analogRead(LIGHT);
   
-  operatingVoltage = 3.3 / operatingVoltage; //The reference voltage is 3.3V
+  operatingVoltage = 3.3f / operatingVoltage; //The reference voltage is 3.3V
   
   lightSensor = operatingVoltage * lightSensor;
   
@@ -305,15 +330,15 @@ float get_light_level()
 //3.9K on the high side (R1), and 1K on the low side (R2)
 float get_battery_level()
 {
-  float operatingVoltage = analogRead(REFERENCE_3V3);
+  float operatingVoltage = (float)analogRead(REFERENCE_3V3);
 
-  float rawVoltage = analogRead(BATT);
+  float rawVoltage = (float)analogRead(BATT);
   
-  operatingVoltage = 3.30 / operatingVoltage; //The reference voltage is 3.3V
+  operatingVoltage = 3.3f / operatingVoltage; //The reference voltage is 3.3V
   
   rawVoltage = operatingVoltage * rawVoltage; //Convert the 0 to 1023 int to actual voltage on BATT pin
   
-  rawVoltage *= 4.90; //(3.9k+1k)/1k - multiple BATT voltage by the voltage divider to get actual system voltage
+  rawVoltage *= 4.9f; //(3.9k+1k)/1k - multiple BATT voltage by the voltage divider to get actual system voltage
   
   return(rawVoltage);
 }
@@ -321,20 +346,19 @@ float get_battery_level()
 //Returns the instataneous wind speed
 float get_wind_speed()
 {
-  float deltaTime = millis() - lastWindCheck; //750ms
+  float deltaTime = (float)(millis() - lastWindCheck); //750ms
 
-  deltaTime /= 1000.0; //Covert to seconds
+  deltaTime /= 1000.0f; //Covert to seconds
 
   float windSpeed = (float)windClicks / deltaTime; //3 / 0.750s = 4
 
   windClicks = 0; //Reset and start watching for new wind
   lastWindCheck = millis();
 
-  windSpeed *= 1.492; //4 * 1.492 = 5.968MPH
-
   /* Serial.println();
    Serial.print("Windspeed:");
    Serial.println(windSpeed);*/
+  windSpeed *= 1.492f; //4 * 1.492 = 5.968MPH
 
   return(windSpeed);
 }
@@ -376,6 +400,7 @@ void printWeather()
 {
   calcWeather(); //Go calc all the various sensors
 
+#ifndef _WINDOWS_
   Serial.println();
   Serial.print("$,winddir=");
   Serial.print(winddir);
@@ -409,7 +434,21 @@ void printWeather()
   Serial.print(light_lvl, 2);
   Serial.print(",");
   Serial.println("#");
-
+#else
+  Log("\n$");
+  Log(",winddir=%d", winddir);
+  Log(",windspeedmph=%.1f", windspeedmph);
+  Log(",windgustmph=%.1f", windgustmph);
+  Log(",windgustdir=%d", windgustdir);
+  Log(",windspdmph_avg2m=%.1f", windspdmph_avg2m);
+  Log(",winddir_avg2m=%d", winddir_avg2m);
+  Log(",windgustmph_10m=%.1f", windgustmph_10m);
+  Log(",windgustdir_10m=%d", windgustdir_10m);
+  Log(",humidity=%.1f", humidity);
+  Log(",tempf=%.1f", tempf);
+  Log(",pressure=%.2f", pressure);
+  Log(",batt_lvl=%.2f", batt_lvl);
+  Log(",light_lvl=%.2f", light_lvl);
+  Log(",#\n");
+#endif
 }
-
-
