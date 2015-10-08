@@ -1,0 +1,6 @@
+[submodule "lightning/WeatherShield/HTU21D"]
+	path = lightning/WeatherShield/HTU21D
+	url = https://github.com/sparkfun/HTU21D_Breakout.git
+[submodule "lightning/WeatherShield/MPL3115A2"]
+	path = lightning/WeatherShield/MPL3115A2
+	url = https://github.com/sparkfun/MPL3115A2_Breakout.git
