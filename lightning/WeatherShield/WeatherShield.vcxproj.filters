@@ -18,6 +18,35 @@
       <Filter>Package Dependencies</Filter>
     </ClCompile>
     <ClCompile Include="WeatherShield.ino" />
+    <ClCompile Include="@(ArduinoSDKSources)" />
+    <ClCompile Include="@(ArduinoSDKSources)" />
+    <ClCompile Include="@(ArduinoSDKSources)" />
+    <ClCompile Include="@(ArduinoSDKSources)" />
+    <ClCompile Include="@(ArduinoSDKSources)" />
+    <ClCompile Include="@(ArduinoSDKSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="@(LightningSources)" />
+    <ClCompile Include="HTU21D\Libraries\Arduino\src\SparkFunHTU21D.cpp" />
+    <ClCompile Include="MPL3115A2\Libraries\Arduino\src\SparkFunMPL3115A2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -26,6 +55,8 @@
     <ClInclude Include="PinNumbers.h">
       <Filter>Package Dependencies\Include</Filter>
     </ClInclude>
+    <ClInclude Include="HTU21D\Libraries\Arduino\src\SparkFunHTU21D.h" />
+    <ClInclude Include="MPL3115A2\Libraries\Arduino\src\SparkFunMPL3115A2.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">

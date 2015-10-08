@@ -204,12 +204,16 @@
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="HTU21D\Libraries\Arduino\src\SparkFunHTU21D.cpp" />
+    <ClCompile Include="MPL3115A2\Libraries\Arduino\src\SparkFunMPL3115A2.cpp" />
     <ClCompile Include="StartupTask.cpp" />
     <ClCompile Include="WeatherShield.ino">
       <FileType>CppCode</FileType>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HTU21D\Libraries\Arduino\src\SparkFunHTU21D.h" />
+    <ClInclude Include="MPL3115A2\Libraries\Arduino\src\SparkFunMPL3115A2.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PinNumbers.h" />
   </ItemGroup>
