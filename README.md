@@ -17,6 +17,16 @@ Repository Contents
 * **/Fritzing** - Fritzing Example wiring images
 * **/Hardware** - All the Eagle PCB design files (.brd, .sch).
 * **/Production** - Test bed files and production panel files
+* **/lightning** - Lightning version of Weather Shield demo using SparkFun HTU21D and MPL3115A2 libraries
+
+Cloning
+-------------------
+
+**Do not download this repository as a zip.**
+
+To receive the HTU21D and MPL3115A2 libraries properly as part of the contents of this repository, use a recursive clone strategy.
+
+`git clone --recursive https://github.com/ms-iot/Weather_Shield.git`
 
 License Information
 -------------------
